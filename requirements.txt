@@ -1,5 +1,5 @@
 numpy
-opencv
+opencv-python
 opencv-contrib-python
 dlib
 imutils
