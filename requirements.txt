@@ -3,3 +3,5 @@ opencv
 opencv-contrib-python
 dlib
 imutils
+tensorflow
+scipy
