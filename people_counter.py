@@ -49,7 +49,7 @@ fpath = 'pretrained_models\\weights.18-4.06.hdf5'
 model.load_weights(fpath)
 # Model loaded into the memory
 
-def crop_face(imgarray, section, margin=40, size=64):
+def crop_face(imgarray, section, margin=80, size=64):
         """
         :param imgarray: full image
         :param section: face detected area (x, y, w, h)
@@ -281,11 +281,10 @@ while True:
 		abc[0, :, :, :] = person_face
 
 		result_age_gender = model.predict(abc)
-		print(result_age_gender)
-
+		age = (result_age_gender[1][0]).dot(np.arange(0,101).reshape(101,1))
 		# draw both the ID of the object and the centroid of the
 		# object on the output frame
-		text = "ID {}".format("F" if result_age_gender[0][0][0] > 0.5 else "M")
+		text = "{} {}".format("F" if result_age_gender[0][0][0] > 0.5 else "M", int(age))
 		cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 		cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
