@@ -277,12 +277,15 @@ while True:
 		# Detecting the gender of the person
 		person_face = bbs[objectID]
 		person_face = crop_face(frame, person_face)
+		abc = np.empty((1, 64, 64, 3))
+		abc[0, :, :, :] = person_face
 
-		result_age_gender = model.predict(person_face)
+		result_age_gender = model.predict(abc)
+		print(result_age_gender)
 
 		# draw both the ID of the object and the centroid of the
 		# object on the output frame
-		text = "ID {}".format(objectID)
+		text = "ID {}".format("F" if result_age_gender[0][0][0] > 0.5 else "M")
 		cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 		cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
