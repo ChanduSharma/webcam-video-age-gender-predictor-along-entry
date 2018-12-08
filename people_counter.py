@@ -43,7 +43,8 @@ args = vars(ap.parse_args())
 # Code for age and gender detection
 # predict function 0 index position is probability of gender with female if prob > 0.5
 # Age is in 1st index and a softmax output, so dot product is to be done with 0 to 100.
-model = WideResNet(face_size, depth=depth, k=width)()
+face_size = 64
+model = WideResNet(face_size, depth=16, k=8)()
 fpath = 'pretrained_models\\weights.18-4.06.hdf5'
 model.load_weights(fpath)
 # Model loaded into the memory
@@ -80,7 +81,7 @@ def crop_face(imgarray, section, margin=40, size=64):
         cropped = imgarray[y_a: y_b, x_a: x_b]
         resized_img = cv2.resize(cropped, (size, size), interpolation=cv2.INTER_AREA)
         resized_img = np.array(resized_img)
-        return resized_img, (x_a, y_a, x_b - x_a, y_b - y_a)
+        return resized_img
 
 # End for age and gender detection
 
@@ -229,7 +230,9 @@ while True:
 
 	# use the centroid tracker to associate the (1) old object
 	# centroids with (2) the newly computed object centroids
-	objects = ct.update(rects)
+	objectsnrects = ct.update(rects)
+	objects = objectsnrects[0]
+	bbs = objectsnrects[1]
 
 	# loop over the tracked objects
 	for (objectID, centroid) in objects.items():
@@ -270,6 +273,12 @@ while True:
 
 		# store the trackable object in our dictionary
 		trackableObjects[objectID] = to
+
+		# Detecting the gender of the person
+		person_face = bbs[objectID]
+		person_face = crop_face(frame, person_face)
+
+		result_age_gender = model.predict(person_face)
 
 		# draw both the ID of the object and the centroid of the
 		# object on the output frame
